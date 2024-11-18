@@ -8,55 +8,59 @@ typedef struct {
     int nb_entrees;
 } Neurone;
 
-
-int Outneurone(double *ei, Neurone neurone) {
-    double somme = 0;
-
+int Outneurone(float *Liste_entrees, Neurone neurone) {
+    float somme = 0;
+    
     for (int i = 0; i < neurone.nb_entrees; i++) {
-        somme += neurone.poids[i] * ei[i];
+        somme += neurone.poids[i] * Liste_entrees[i];  
     }
-
-    somme += neurone.biais;  
+    
     if (somme >= neurone.biais) {
-        return 1;
+        return 1;  // Activation du neurone
     } else {
-        return 0;
+        return 0;  // Pas d'activation
     }
 }
 
 Neurone InitNeur(int n) {
     Neurone neurone;
-
     neurone.nb_entrees = n;
-
     neurone.poids = (int *)malloc(n * sizeof(int));
-
+    printf("Entrez les %d poids du neurone :\n", n);
     for (int i = 0; i < n; i++) {
-        neurone.poids[i] = (rand() % 21) - 10;
+        printf("Poids %d: ", i + 1);
+        scanf("%d", &neurone.poids[i]);
     }
-
-    neurone.biais = (rand() % 21) - 10;
-
+    printf("Entrez le biais du neurone : ");
+    scanf("%d", &neurone.biais);
+    
     return neurone;
 }
 
 int main() {
-   srand(time(NULL));
+    int n;
+    printf("Combien d'entrées pour le neurone? ");
+    scanf("%d", &n);
 
-    int n = 5;
+    // Initialiser le neurone avec n entrées
     Neurone neurone = InitNeur(n);
-
-    for (int i = 0; i < n; i++) {
-        printf("Poids %d: %d\n", i, neurone.poids[i]);
+    float *entrees = (float *)malloc(neurone.nb_entrees * sizeof(float));
+    
+    printf("Entrez les valeurs des entrées du neurone : \n");
+    for (int i = 0; i < neurone.nb_entrees; i++) {
+        printf("Entrée %d: ", i + 1);
+        scanf("%f", &entrees[i]);
     }
-    printf("Biais: %d\n", neurone.biais);
-
-    double entrees[] = {1.5, -2.3, 0.8, 1.0, -1.7};  // Exemple d'entrées
+    
+    // Calcul de la sortie du neurone
     int sortie = Outneurone(entrees, neurone);
-
+    
+    // Affichage de la sortie du neurone
     printf("Sortie du neurone : %d\n", sortie);
-
+    
+    // Libération de la mémoire allouée pour les poids et les entrées
     free(neurone.poids);
+    free(entrees);
 
     return 0;
 }

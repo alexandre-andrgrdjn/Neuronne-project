@@ -36,9 +36,41 @@ Neurone InitNeur(int n) {
     
     return neurone;
 }
+//Partie 2
+typedef struct {
+    Neurone *neurones;   
+    int nb_neurones;    
+} Couche;
+
+Couche InitCouche(int nb_neurones, int nb_entrees) {
+    Couche couche;
+    couche.nb_neurones = nb_neurones;
+    couche.neurones = (Neurone *)malloc(nb_neurones * sizeof(Neurone));
+    
+    for (int i = 0; i < nb_neurones; i++) {
+        printf("Initialisation du neurone %d\n", i+1);
+        couche.neurones[i] = InitNeur(nb_entrees);
+    }
+    
+    return couche;
+}
+
+int* OutCouche(Couche couche, float *Liste_entrees) {
+ 
+    int *Sorties = (int*)malloc(couche.nb_neurones * sizeof(int));
+    
+    
+    for (int i = 0; i < couche.nb_neurones; i++) {
+        Sorties[i] = Outneurone(Liste_entrees, couche.neurones[i]);
+    }
+    
+    return Sorties;
+}
+
 
 int main() {
-    int n;
+    //test partie 1
+  /* int n;
     printf("Combien d'entrées pour le neurone? ");
     scanf("%d", &n);
 
@@ -61,6 +93,24 @@ int main() {
     // Libération de la mémoire allouée pour les poids et les entrées
     free(neurone.poids);
     free(entrees);
+    */ 
+
+
+   // Test de la partie 2
+    int nb_neurones = 3;
+    int nb_entrees = 2;
+    Couche couche = InitCouche(nb_neurones, nb_entrees);
+    float entrees[] = {1.0, -1.5};
+    int *sorties = OutCouche(couche, entrees);
+    printf("Calcul des sorties de la couche : \n");
+    for (int i = 0; i < nb_neurones; i++) {
+        printf("Sortie du neurone %d : %d\n", i + 1, sorties[i]);
+    }
+    free(sorties);
+    for (int i = 0; i < nb_neurones; i++) {
+        free(couche.neurones[i].poids);
+    }
+    free(couche.neurones); 
 
     return 0;
 }

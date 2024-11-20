@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 typedef struct {
-    int *poids;
+    // int *poids; faire liste chainée
     int biais;
     int nb_entrees;
 } Neurone;
@@ -29,7 +29,7 @@ Neurone InitNeur(int n) {
     printf("Entrez les %d poids du neurone :\n", n);
     for (int i = 0; i < n; i++) {
         printf("Poids %d: ", i + 1);
-        scanf("%d", &neurone.poids[i]);
+        scanf("%d", &neurone.poids[i]);//modifier
     }
     printf("Entrez le biais du neurone : ");
     scanf("%d", &neurone.biais);
@@ -38,7 +38,7 @@ Neurone InitNeur(int n) {
 }
 //Partie 2
 typedef struct {
-    Neurone *neurones;   
+    // Neurone *neurones; faire liste chainée
     int nb_neurones;    
 } Couche;
 
@@ -49,7 +49,7 @@ Couche InitCouche(int nb_neurones, int nb_entrees) {
     
     for (int i = 0; i < nb_neurones; i++) {
         printf("Initialisation du neurone %d\n", i+1);
-        couche.neurones[i] = InitNeur(nb_entrees);
+        couche.neurones[i] = InitNeur(nb_entrees);//modifier
     }
     
     return couche;
@@ -61,7 +61,7 @@ int* OutCouche(Couche couche, float *Liste_entrees) {
     
     
     for (int i = 0; i < couche.nb_neurones; i++) {
-        Sorties[i] = Outneurone(Liste_entrees, couche.neurones[i]);
+        Sorties[i] = Outneurone(Liste_entrees, couche.neurones[i]);//modifier
     }
     
     return Sorties;

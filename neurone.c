@@ -1,32 +1,29 @@
 #include "neurone.h" 
-
-int Outneurone(float *Liste_entrees, Neurone neurone) {
-    float somme = 0;
-    
-    for (int i = 0; i < neurone.nb_entrees; i++) {
-        somme += neurone.poids[i] * Liste_entrees[i];  
-    }
-    
-    if (somme >= neurone.biais) {
-        return 1;  // Activation du neurone
-    } else {
-        return 0;  // Pas d'activation
-    }
-}
-
 Neurone InitNeur(int n) {
     Neurone neurone;
     neurone.nb_entrees = n;
-    neurone.poids = (int *)malloc(n * sizeof(int));
-    printf("Entrez les %d poids du neurone :\n", n);
-    for (int i = 0; i < n; i++) {
-        printf("Poids %d: ", i + 1);
-        scanf("%d", &neurone.poids[i]);
-    }
+    neurone.poids = remplirListePoids(n);
     printf("Entrez le biais du neurone : ");
-    scanf("%d", &neurone.biais);
-    
+    scanf("%f", &neurone.biais);
     return neurone;
+}
+
+int Outneurone(Entree* liste_entree, Neurone neurone) {
+    float somme = 0;
+    Poids* current_poids = neurone.poids;
+    Entree* current_entree = liste_entree;
+
+    for (int i = 0; i < neurone.nb_entrees; i++) {
+        somme += current_poids->data * current_entree->data;
+        current_poids = current_poids->suivant;
+        current_entree = current_entree->suivant;
+    }
+
+    if (somme >= neurone.biais) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 //Partie 2
 
@@ -34,24 +31,57 @@ Neurone InitNeur(int n) {
 Couche InitCouche(int nb_neurones, int nb_entrees) {
     Couche couche;
     couche.nb_neurones = nb_neurones;
-    couche.neurones = (Neurone *)malloc(nb_neurones * sizeof(Neurone));
-    
+    couche.neurones = NULL;
+    NoeudNeurone* dernier = NULL;
+
     for (int i = 0; i < nb_neurones; i++) {
-        printf("Initialisation du neurone %d\n", i+1);
-        couche.neurones[i] = InitNeur(nb_entrees);
+        NoeudNeurone* nouveau = (NoeudNeurone*)malloc(sizeof(NoeudNeurone));
+        if (nouveau == NULL) {
+            printf("Erreur d'allocation mémoire\n");
+            exit(1);
+        }
+        nouveau->neurone = InitNeur(nb_entrees);
+        nouveau->suivant = NULL;
+
+        if (couche.neurones == NULL) {
+            couche.neurones = nouveau;
+        } else {
+            dernier->suivant = nouveau;
+        }
+        dernier = nouveau;
     }
-    
+
     return couche;
 }
 
-int* OutCouche(Couche couche, float *Liste_entrees) {
- 
-    int *Sorties = (int*)malloc(couche.nb_neurones * sizeof(int));
-    
-    
-    for (int i = 0; i < couche.nb_neurones; i++) {
-        Sorties[i] = Outneurone(Liste_entrees, couche.neurones[i]);
+ListeSortie* OutCouche(Couche couche, Entree* liste_entrees) {
+    ListeSortie* sortie_tete = NULL;
+    ListeSortie* sortie_precedente = NULL;
+
+    NoeudNeurone* current_neurone = couche.neurones;
+
+    while (current_neurone != NULL) {
+        int sortie_neurone = Outneurone(liste_entrees, current_neurone->neurone);
+        
+        ListeSortie* nouvelle_sortie = (ListeSortie*)malloc(sizeof(ListeSortie));
+        if (nouvelle_sortie == NULL) {
+            printf("Erreur d'allocation mémoire\n");
+            exit(1);
+        }
+        nouvelle_sortie->data = sortie_neurone;
+        nouvelle_sortie->suivant = NULL;
+
+        if (sortie_tete == NULL) {
+            sortie_tete = nouvelle_sortie;
+        } else {
+            sortie_precedente->suivant = nouvelle_sortie;
+        }
+
+        sortie_precedente = nouvelle_sortie;
+
+        current_neurone = current_neurone->suivant;
     }
-    
-    return Sorties;
+
+    return sortie_tete;
 }
+

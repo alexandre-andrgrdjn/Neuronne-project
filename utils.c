@@ -28,6 +28,19 @@ Poids* remplirListePoids(int n) {
     return tete;  
 }
 
+
+void libererListePoids(Poids* tete) {
+    Poids* current = tete;
+    Poids* suivant = NULL;
+
+    while (current != NULL) {
+        suivant = current->suivant;
+        free(current);  
+        current = suivant;
+    }
+}
+
+
 Entree* remplirListeEntree(int n) {
     Entree* current = NULL;
     Entree* previous = NULL;
@@ -82,3 +95,63 @@ NoeudNeurone* remplirCouche(int nb_neurones, int nb_entrees) {
     return tete;
 }
 
+nbCouches* CreerListeTailles() {
+    int nb_couches;
+    printf("Entrez le nombre de couches : ");
+    scanf("%d", &nb_couches);
+
+    nbCouches* tete = NULL;
+    nbCouches* courant = NULL;
+
+    for (int i = 0; i < nb_couches; i++) {
+        nbCouches* nouveau = (nbCouches*)malloc(sizeof(nbCouches));
+        if (nouveau == NULL) {
+            printf("Erreur d'allocation mémoire\n");
+            exit(1);
+        }
+
+        printf("Entrez le nombre de neurones pour la couche %d : ", i + 1);
+        scanf("%d", &(nouveau->data));
+        nouveau->suivant = NULL;
+
+        if (tete == NULL) {
+            tete = nouveau;
+        } else {
+            courant->suivant = nouveau;
+        }
+        courant = nouveau;
+    }
+
+    return tete;
+}
+void afficherReseau(Listecouche* reseau) {
+    Listecouche* current = reseau;
+    int couche_id = 1;
+
+    while (current != NULL) {
+        printf("Couche %d : %d neurones\n", couche_id, current->couche->nb_neurones);
+
+        NoeudNeurone* neurone_courant = current->couche->neurones;
+        int neurone_id = 1;
+        while (neurone_courant != NULL) {
+            printf("  Neurone %d :\n", neurone_id);
+            
+            
+            Poids* poids_courant = neurone_courant->neurone.poids;
+            int poids_id = 1;
+            while (poids_courant != NULL) {
+                printf("    Poids %d : %.2f\n", poids_id, poids_courant->data);
+                poids_courant = poids_courant->suivant;
+                poids_id++;
+            }
+            
+            printf("    Biais : %.2f\n", neurone_courant->neurone.biais);
+
+            neurone_courant = neurone_courant->suivant;
+            neurone_id++;
+        }
+
+        current = current->suivant;
+        couche_id++;
+    }
+}

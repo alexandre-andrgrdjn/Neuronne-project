@@ -35,9 +35,21 @@ typedef struct Couche {
 } Couche;
 
 typedef struct ListeSortie {
-    int data;
+    float data;
     struct ListeSortie* suivant;
 } ListeSortie;
+
+//partie 3
+
+typedef struct Listecouche {
+    Couche* couche;
+    struct Listecouche* suivant;
+} Listecouche;
+
+typedef struct nbCouches {
+    int data;
+    struct nbCouches* suivant;
+} nbCouches;
 
 
 // Fonctions du projet
@@ -52,7 +64,12 @@ ListeSortie* OutCouche(Couche couche, Entree* liste_entrees);
 
 // Fonctions utilitaires
 Poids* remplirListePoids(int n);
+void libererListePoids(Poids* tete);
 Entree* remplirListeEntree(int n);
+nbCouches* CreerListeTailles();
+void afficherReseau(Listecouche* reseau);
 
+//Partie 3
+Listecouche* CreerResNeur(int nb_couches, nbCouches* liste_nbParCouches) ;
 
 #endif

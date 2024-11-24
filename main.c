@@ -26,7 +26,7 @@
 
    // Test de la partie 2
  
-
+/*
 int main() {
     int nb_neurones, nb_entrees;
 
@@ -52,3 +52,24 @@ int main() {
 
     return 0;
 }
+*/
+
+//Test de la Partie 3
+
+int main() {
+    nbCouches* liste_tailles = CreerListeTailles();
+
+    int nb_couches = 0;
+    nbCouches* temp = liste_tailles;
+    while (temp != NULL) {
+        nb_couches++;
+        temp = temp->suivant;
+    }
+    
+    Listecouche* reseau = CreerResNeur(nb_couches, liste_tailles);
+    printf("Réseau de neurones créé :\n");
+    afficherReseau(reseau);
+
+    return 0;
+}
+

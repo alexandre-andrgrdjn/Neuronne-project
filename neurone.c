@@ -85,3 +85,45 @@ ListeSortie* OutCouche(Couche couche, Entree* liste_entrees) {
     return sortie_tete;
 }
 
+//Partie 3
+Listecouche* CreerResNeur(int nb_couches, nbCouches* liste_nbParCouches) {
+    nbCouches* temp = liste_nbParCouches;
+    Listecouche* couche_pre = NULL;
+    Listecouche* couche_tete = NULL;
+    int nb_entrees_initial;
+    printf("Donnez le nombre d'entrées initiales : ");
+    scanf("%d", &nb_entrees_initial);
+
+    for (int i = 0; i < nb_couches; i++) {
+        int nb_neurones = temp->data;
+
+        Listecouche* Newcouche = (Listecouche*)malloc(sizeof(Listecouche));
+        if (Newcouche == NULL) {
+            printf("Erreur d'allocation mémoire\n");
+            exit(1);
+        }
+
+        Couche nouvelle_couche = InitCouche(nb_neurones, nb_entrees_initial);
+
+        Newcouche->couche = (Couche*)malloc(sizeof(Couche));
+        if (Newcouche->couche == NULL) {
+            printf("Erreur d'allocation mémoire pour la couche\n");
+            exit(1);
+        }
+        *(Newcouche->couche) = nouvelle_couche;
+
+        Newcouche->suivant = NULL;
+
+        if (couche_tete == NULL) {
+            couche_tete = Newcouche;
+        } else {
+            couche_pre->suivant = Newcouche;
+        }
+
+        couche_pre = Newcouche;
+        nb_entrees_initial = nb_neurones; 
+        temp = temp->suivant;
+    }
+
+    return couche_tete;
+}

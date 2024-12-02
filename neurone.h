@@ -71,5 +71,6 @@ void afficherReseau(Listecouche* reseau);
 
 //Partie 3
 Listecouche* CreerResNeur(int nb_couches, nbCouches* liste_nbParCouches) ;
-
+//Partie4
+float reseauET(Listecouche* reseau, Entree* entrees);
 #endif

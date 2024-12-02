@@ -52,7 +52,7 @@ int main() {
 
     return 0;
 }
-*/
+
 
 //Test de la Partie 3
 
@@ -72,4 +72,51 @@ int main() {
 
     return 0;
 }
+*/
+int main() {
+    
+    int nb_entrees;
+    printf("Combien d'entrées voulez-vous dans le réseau ? ");
+    scanf("%d", &nb_entrees);
 
+   
+    Entree* entrees = remplirListeEntree(nb_entrees);
+
+   Listecouche* reseau = (Listecouche*)malloc(sizeof(Listecouche));
+    if (reseau == NULL) {
+        printf("Erreur d'allocation mémoire pour le réseau.\n");
+        return -1;
+    }
+
+    reseau->couche = (Couche*)malloc(sizeof(Couche));
+    if (reseau->couche == NULL) {
+        printf("Erreur d'allocation mémoire pour la couche.\n");
+        return -1;
+    }
+    *reseau->couche = InitCouche(1, nb_entrees);
+
+    // Appel à la fonction reseauET pour calculer la sortie
+    float resultat = reseauET(reseau, entrees);
+
+    if (resultat != -1) {
+        printf("Le résultat du réseau ET est : %.2f\n", resultat);
+    }
+
+    Entree* temp;
+    while (entrees != NULL) {
+        temp = entrees;
+        entrees = entrees->suivant;
+        free(temp);
+    }
+    NoeudNeurone* noeud_courant = reseau->couche->neurones;
+    while (noeud_courant != NULL) {
+        NoeudNeurone* temp = noeud_courant;
+        noeud_courant = noeud_courant->suivant;
+        free(temp->neurone.poids);
+        free(temp);
+    }
+    free(reseau->couche);
+    free(reseau);
+
+    return 0;
+}

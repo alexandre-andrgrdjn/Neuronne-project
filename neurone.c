@@ -182,3 +182,56 @@ float reseauET(Listecouche* reseau, Entree* entrees) {
 
     return resultat;
 }
+float reseauOU(Listecouche* reseau, Entree* entrees) {
+    if (reseau == NULL || reseau->couche == NULL) {
+        printf("Erreur : réseau ou couche invalide.\n");
+        return -1;
+    }
+
+    Couche* couche_principale = reseau->couche;
+        
+    if (couche_principale->nb_neurones != 1) {
+    printf("Erreur : ce réseau contient %d neurones, mais la fonction ET nécessite exactement 1 neurone.\n", couche_principale->nb_neurones);
+    return -1; 
+}
+
+    NoeudNeurone* noeud_courant = couche_principale->neurones;
+    
+    while (noeud_courant != NULL) {
+        Neurone* neurone_courant = &noeud_courant->neurone;
+
+         if (neurone_courant->biais != 1) {
+            printf("Biais modifié pour être égal a 1.\n");
+            neurone_courant->biais = 1;  // Ajuste le biais pour qu'il soit égal a 1
+        }
+
+        Poids* poids_courant = neurone_courant->poids;
+        
+        while (poids_courant != NULL) {
+            if (poids_courant->data != 1) {
+                printf("Poids différent de 1 détecté : réinitialisation à 1.\n");
+                poids_courant->data = 1;
+            }
+            poids_courant = poids_courant->suivant;
+        }
+        noeud_courant = noeud_courant->suivant;
+    }
+
+   ListeSortie* sorties = OutCouche(*(couche_principale), entrees);
+
+    if (sorties == NULL) {
+        printf("Erreur : aucune sortie générée.\n");
+        return -1;
+    }
+
+    float resultat = sorties->data;
+
+    ListeSortie* temp;
+    while (sorties != NULL) {
+        temp = sorties->suivant;
+        free(sorties);
+        sorties = temp;
+    }
+
+    return resultat;
+}

@@ -120,7 +120,7 @@ int main() {
 
     return 0;
 }
-*/
+
 int main() {
     
     int nb_entrees;
@@ -148,6 +148,60 @@ int main() {
 
     if (resultat != -1) {
         printf("Le résultat du réseau OU est : %.2f\n", resultat);
+    }
+
+    Entree* temp;
+    while (entrees != NULL) {
+        temp = entrees;
+        entrees = entrees->suivant;
+        free(temp);
+    }
+    NoeudNeurone* noeud_courant = reseau->couche->neurones;
+    while (noeud_courant != NULL) {
+        NoeudNeurone* temp = noeud_courant;
+        noeud_courant = noeud_courant->suivant;
+        free(temp->neurone.poids);
+        free(temp);
+    }
+    free(reseau->couche);
+    free(reseau);
+
+    return 0;
+}
+*/
+
+int main() {
+    
+    int nb_entrees=0;
+    printf("Combien d'entrées voulez-vous dans le réseau ? ");
+    scanf("%d", &nb_entrees); 
+
+    while (nb_entrees != 1)
+    {
+    printf("Pour un reseau NOT , il ne faut qu'une seule entrée.\n ");
+    nb_entrees = 1; 
+    }
+
+   
+    Entree* entrees = remplirListeEntree(nb_entrees);
+
+   Listecouche* reseau = (Listecouche*)malloc(sizeof(Listecouche));
+    if (reseau == NULL) {
+        printf("Erreur d'allocation mémoire pour le réseau.\n");
+        return -1;
+    }
+
+    reseau->couche = (Couche*)malloc(sizeof(Couche));
+    if (reseau->couche == NULL) {
+        printf("Erreur d'allocation mémoire pour la couche.\n");
+        return -1;
+    }
+    *reseau->couche = InitCouche(1, nb_entrees);
+
+    float resultat = reseauNOT(reseau, entrees);
+
+    if (resultat != -1) {
+        printf("Le résultat du réseau NOT est : %.2f\n", resultat);
     }
 
     Entree* temp;

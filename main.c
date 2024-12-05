@@ -72,6 +72,7 @@ int main() {
 
     return 0;
 }
+Test reseau ET
 
 int main() {
     
@@ -120,6 +121,7 @@ int main() {
 
     return 0;
 }
+Test reseau OU
 
 int main() {
     
@@ -169,6 +171,7 @@ int main() {
     return 0;
 }
 */
+//test reseau NOT
 
 int main() {
     

@@ -310,22 +310,22 @@ float reseauNOT(Listecouche* reseau, Entree* entrees) {
 float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche* reseauC, Entree* entrees) {
    
    printf("Entree dans reseauMulticouche\n");
-
-    // Calcul de NOT B et NOT C
-    printf("Calcul de NOT B et NOT C\n");
-    float sortie_NOT_B = reseauNOT(reseauB, entrees);
-    printf("sortie_NOT_B: %f\n", sortie_NOT_B);
-    float sortie_NOT_C = reseauNOT(reseauC, entrees);
-    printf("sortie_NOT_C: %f\n", sortie_NOT_C);
-
-    // Calcul de la sortie du réseau A et du réseau C
-    printf("Calcul de la sortie de A\n");
+   
+   printf("Calcul de la sortie de A\n");
     float sortie_A = Outneurone(entrees, reseauA->couche->neurones->neurone);
     if (sortie_A == -1) {
         printf("Erreur dans le calcul de la sortie A.\n");
         return -1;
     }
     printf("sortie_A: %f\n", sortie_A);
+
+    printf("Calcul de la sortie de B\n");
+    float sortie_B = Outneurone(entrees, reseauB->couche->neurones->neurone);
+    if (sortie_B == -1) {
+        printf("Erreur dans le calcul de la sortie B.\n");
+        return -1;
+    }
+    printf("sortie_B: %f\n", sortie_B);
 
     printf("Calcul de la sortie de C\n");
     float sortie_C = Outneurone(entrees, reseauC->couche->neurones->neurone);
@@ -335,6 +335,42 @@ float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche
     }
     printf("sortie_C: %f\n", sortie_C);
 
+ Neurone neurone_NOT;
+    neurone_NOT.nb_entrees = 1;
+    neurone_NOT.biais = 0;
+    neurone_NOT.poids = remplirListePoidsVal1(neurone_NOT.nb_entrees);
+    Listecouche* Reseau_NOT = creer_reseau_avec_neurone(neurone_NOT);
+
+    //mise ne liste chainée des valeurs
+    Entree* liste_B = NULL;
+    liste_B = (Entree*)malloc(sizeof(Entree));
+        if (liste_B == NULL) {
+            printf("Erreur d'allocation mémoire\n");
+            exit(1);
+        }
+    liste_B->data=sortie_B;
+    liste_B->suivant=NULL;
+
+    Entree* liste_C = NULL;
+    liste_C = (Entree*)malloc(sizeof(Entree));
+        if (liste_C == NULL) {
+            printf("Erreur d'allocation mémoire\n");
+            exit(1);
+        }
+    liste_C->data=sortie_C;
+    liste_C->suivant=NULL;
+
+
+
+    // Calcul de NOT B et NOT C
+    printf("Calcul de NOT B et NOT C\n");
+    float sortie_NOT_B = reseauNOT(Reseau_NOT, liste_B);
+    printf("sortie_NOT_B: %f\n", sortie_NOT_B);
+    float sortie_NOT_C = reseauNOT(Reseau_NOT, liste_C);
+    printf("sortie_NOT_C: %f\n", sortie_NOT_C);
+
+    // Calcul de la sortie du réseau A et du réseau C
+  
     // Création du réseau ET1 avec 3 entrées
     printf("Création du neurone ET1\n");
     

@@ -228,7 +228,7 @@ int main() {
 */
 
 int main() {
-    int nb_entrees;
+    int nb_entrees=0;
     printf("Combien d'entrées voulez-vous dans le réseau ? ");
     scanf("%d", &nb_entrees); 
      Entree* entrees = remplirListeEntree(nb_entrees);

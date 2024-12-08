@@ -309,9 +309,6 @@ float reseauNOT(Listecouche* reseau, Entree* entrees) {
 
 float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche* reseauC, Entree* entrees) {
    
-   printf("Entree dans reseauMulticouche\n");
-   
-   printf("Calcul de la sortie de A\n");
     float sortie_A = Outneurone(entrees, reseauA->couche->neurones->neurone);
     if (sortie_A == -1) {
         printf("Erreur dans le calcul de la sortie A.\n");
@@ -319,7 +316,6 @@ float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche
     }
     printf("sortie_A: %f\n", sortie_A);
 
-    printf("Calcul de la sortie de B\n");
     float sortie_B = Outneurone(entrees, reseauB->couche->neurones->neurone);
     if (sortie_B == -1) {
         printf("Erreur dans le calcul de la sortie B.\n");
@@ -327,7 +323,6 @@ float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche
     }
     printf("sortie_B: %f\n", sortie_B);
 
-    printf("Calcul de la sortie de C\n");
     float sortie_C = Outneurone(entrees, reseauC->couche->neurones->neurone);
     if (sortie_C == -1) {
         printf("Erreur dans le calcul de la sortie C.\n");
@@ -363,7 +358,7 @@ float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche
 
 
     // Calcul de NOT B et NOT C
-    printf("Calcul de NOT B et NOT C\n");
+
     float sortie_NOT_B = reseauNOT(Reseau_NOT, liste_B);
     printf("sortie_NOT_B: %f\n", sortie_NOT_B);
     float sortie_NOT_C = reseauNOT(Reseau_NOT, liste_C);
@@ -372,7 +367,7 @@ float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche
     // Calcul de la sortie du réseau A et du réseau C
   
     // Création du réseau ET1 avec 3 entrées
-    printf("Création du neurone ET1\n");
+
     
     Neurone neurone_et1;
     neurone_et1.nb_entrees = 3;
@@ -386,10 +381,8 @@ float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche
         printf("Erreur dans la création du réseau ET1\n");
         return -1;
     }
-    printf("Réseau ET1 créé avec succès\n");
 
     // Création du réseau ET2 avec 2 entrées
-    printf("Création du neurone ET2\n");
     Neurone neurone_et2;
     neurone_et2.nb_entrees = 2;
     neurone_et2.biais = 2;
@@ -402,10 +395,8 @@ float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche
         printf("Erreur dans la création du réseau ET2\n");
         return -1;
     }
-    printf("Réseau ET2 créé avec succès\n");
 
     // Création des entrées pour le premier ET
-    printf("Création des entrées pour le premier ET\n");
     Entree* et_1 = (Entree*)malloc(sizeof(Entree));
     if (et_1 == NULL) {
         printf("Erreur d'allocation mémoire pour et_1\n");
@@ -433,10 +424,9 @@ float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche
     et_1->suivant = entree_not_B;
     entree_not_B->suivant = entree_C;
 
-    printf("Entrées pour le premier ET créées\n");
 
     // Création des entrées pour le deuxième ET
-    printf("Création des entrées pour le deuxième ET\n");
+
     Entree* et_2 = (Entree*)malloc(sizeof(Entree));
     if (et_2 == NULL) {
         printf("Erreur d'allocation mémoire pour et_2\n");
@@ -455,10 +445,8 @@ float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche
 
     et_2->suivant = entree_not_C;
 
-    printf("Entrées pour le deuxième ET créées\n");
-
     // Calcul des sorties des deux ET
-    printf("Calcul des sorties des ET\n");
+
     float sortie_et1 = reseauET(Reseau_ET1, et_1);
     if (sortie_et1 == -1) {
         printf("Erreur dans le calcul de la sortie du premier ET\n");
@@ -474,7 +462,7 @@ float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche
     printf("sortie_et2: %f\n", sortie_et2);
 
     // Création du réseau OU avec 2 entrées
-    printf("Création du neurone OU\n");
+
     Neurone neurone_ou;
     neurone_ou.nb_entrees = 2;
     neurone_ou.biais = 2;
@@ -486,10 +474,8 @@ float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche
         printf("Erreur dans la création du réseau OU\n");
         return -1;
     }
-    printf("Réseau OU créé avec succès\n");
 
     // Création des entrées pour le réseau OU
-    printf("Création des entrées pour le réseau OU\n");
     Entree* Ou_tete = (Entree*)malloc(sizeof(Entree));
     if (Ou_tete == NULL) {
         printf("Erreur d'allocation mémoire pour Ou_tete\n");
@@ -508,16 +494,13 @@ float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche
 
     Ou_tete->suivant = Ou_dernier;
 
-    printf("Entrées pour le réseau OU créées\n");
 
     // Retour de la sortie du réseau OU
-    printf("Calcul de la sortie du réseau OU\n");
     float result = reseauOU(Reseau_OU, Ou_tete);
     if (result == -1) {
         printf("Erreur dans le calcul de la sortie du réseau OU\n");
         return -1;
     }
-    printf("result: %f\n", result);
 
     // Libération de la mémoire
     free(et_1);

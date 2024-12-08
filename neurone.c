@@ -8,12 +8,25 @@ Neurone InitNeur(int n) {
     return neurone;
 }
 
-int Outneurone(Entree* liste_entree, Neurone neurone) {
+float Outneurone(Entree* liste_entree, Neurone neurone) {
+    if (liste_entree == NULL) {
+        printf("Erreur : liste d'entrées est NULL.\n");
+        return -1;  // ou gérer l'erreur autrement
+    }
+    if (neurone.poids == NULL) {
+        printf("Erreur : poids du neurone sont NULL.\n");
+        return -1;  // ou gérer l'erreur autrement
+    }
     float somme = 0;
     Poids* current_poids = neurone.poids;
     Entree* current_entree = liste_entree;
 
     for (int i = 0; i < neurone.nb_entrees; i++) {
+
+         if (current_poids == NULL || current_entree == NULL) {
+            printf("Erreur : pointeur poids ou entrée manquant à l'index %d.\n", i);
+            return -1;  // ou gérer l'erreur autrement
+        }
         somme += current_poids->data * current_entree->data;
         current_poids = current_poids->suivant;
         current_entree = current_entree->suivant;
@@ -35,6 +48,7 @@ Couche InitCouche(int nb_neurones, int nb_entrees) {
     NoeudNeurone* dernier = NULL;
 
     for (int i = 0; i < nb_neurones; i++) {
+    printf("neurone %d\n", i + 1);
         NoeudNeurone* nouveau = (NoeudNeurone*)malloc(sizeof(NoeudNeurone));
         if (nouveau == NULL) {
             printf("Erreur d'allocation mémoire\n");
@@ -49,10 +63,13 @@ Couche InitCouche(int nb_neurones, int nb_entrees) {
             dernier->suivant = nouveau;
         }
         dernier = nouveau;
+    
     }
 
     return couche;
 }
+
+
 
 ListeSortie* OutCouche(Couche couche, Entree* liste_entrees) {
     ListeSortie* sortie_tete = NULL;
@@ -288,4 +305,192 @@ float reseauNOT(Listecouche* reseau, Entree* entrees) {
     }
 
     return resultat;
+}
+
+float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche* reseauC, Entree* entrees) {
+   
+   printf("Entree dans reseauMulticouche\n");
+
+    // Calcul de NOT B et NOT C
+    printf("Calcul de NOT B et NOT C\n");
+    float sortie_NOT_B = reseauNOT(reseauB, entrees);
+    printf("sortie_NOT_B: %f\n", sortie_NOT_B);
+    float sortie_NOT_C = reseauNOT(reseauC, entrees);
+    printf("sortie_NOT_C: %f\n", sortie_NOT_C);
+
+    // Calcul de la sortie du réseau A et du réseau C
+    printf("Calcul de la sortie de A\n");
+    float sortie_A = Outneurone(entrees, reseauA->couche->neurones->neurone);
+    if (sortie_A == -1) {
+        printf("Erreur dans le calcul de la sortie A.\n");
+        return -1;
+    }
+    printf("sortie_A: %f\n", sortie_A);
+
+    printf("Calcul de la sortie de C\n");
+    float sortie_C = Outneurone(entrees, reseauC->couche->neurones->neurone);
+    if (sortie_C == -1) {
+        printf("Erreur dans le calcul de la sortie C.\n");
+        return -1;
+    }
+    printf("sortie_C: %f\n", sortie_C);
+
+    // Création du réseau ET1 avec 3 entrées
+    printf("Création du neurone ET1\n");
+    
+    Neurone neurone_et1;
+    neurone_et1.nb_entrees = 3;
+    neurone_et1.biais = 3;
+    neurone_et1.poids = remplirListePoidsVal1(neurone_et1.nb_entrees);
+
+   Listecouche* Reseau_ET1 = creer_reseau_avec_neurone(neurone_et1);
+
+    // Vérifier si le réseau a été créé
+    if (Reseau_ET1 == NULL) {
+        printf("Erreur dans la création du réseau ET1\n");
+        return -1;
+    }
+    printf("Réseau ET1 créé avec succès\n");
+
+    // Création du réseau ET2 avec 2 entrées
+    printf("Création du neurone ET2\n");
+    Neurone neurone_et2;
+    neurone_et2.nb_entrees = 2;
+    neurone_et2.biais = 2;
+    neurone_et2.poids = remplirListePoidsVal1(neurone_et2.nb_entrees);
+
+ Listecouche* Reseau_ET2 = creer_reseau_avec_neurone(neurone_et2);
+
+    // Vérifier si le réseau a été créé
+    if (Reseau_ET2 == NULL) {
+        printf("Erreur dans la création du réseau ET2\n");
+        return -1;
+    }
+    printf("Réseau ET2 créé avec succès\n");
+
+    // Création des entrées pour le premier ET
+    printf("Création des entrées pour le premier ET\n");
+    Entree* et_1 = (Entree*)malloc(sizeof(Entree));
+    if (et_1 == NULL) {
+        printf("Erreur d'allocation mémoire pour et_1\n");
+        return -1;
+    }
+    et_1->data = sortie_A;
+    et_1->suivant = NULL;
+
+    Entree* entree_not_B = (Entree*)malloc(sizeof(Entree));
+    if (entree_not_B == NULL) {
+        printf("Erreur d'allocation mémoire pour entree_not_B\n");
+        return -1;
+    }
+    entree_not_B->data = sortie_NOT_B;
+    entree_not_B->suivant = NULL;
+
+    Entree* entree_C = (Entree*)malloc(sizeof(Entree));
+    if (entree_C == NULL) {
+        printf("Erreur d'allocation mémoire pour entree_C\n");
+        return -1;
+    }
+    entree_C->data = sortie_C;
+    entree_C->suivant = NULL;
+
+    et_1->suivant = entree_not_B;
+    entree_not_B->suivant = entree_C;
+
+    printf("Entrées pour le premier ET créées\n");
+
+    // Création des entrées pour le deuxième ET
+    printf("Création des entrées pour le deuxième ET\n");
+    Entree* et_2 = (Entree*)malloc(sizeof(Entree));
+    if (et_2 == NULL) {
+        printf("Erreur d'allocation mémoire pour et_2\n");
+        return -1;
+    }
+    et_2->data = sortie_A;
+    et_2->suivant = NULL;
+
+    Entree* entree_not_C = (Entree*)malloc(sizeof(Entree));
+    if (entree_not_C == NULL) {
+        printf("Erreur d'allocation mémoire pour entree_not_C\n");
+        return -1;
+    }
+    entree_not_C->data = sortie_NOT_C;
+    entree_not_C->suivant = NULL;
+
+    et_2->suivant = entree_not_C;
+
+    printf("Entrées pour le deuxième ET créées\n");
+
+    // Calcul des sorties des deux ET
+    printf("Calcul des sorties des ET\n");
+    float sortie_et1 = reseauET(Reseau_ET1, et_1);
+    if (sortie_et1 == -1) {
+        printf("Erreur dans le calcul de la sortie du premier ET\n");
+        return -1;
+    }
+    printf("sortie_et1: %f\n", sortie_et1);
+
+    float sortie_et2 = reseauET(Reseau_ET2, et_2);
+    if (sortie_et2 == -1) {
+        printf("Erreur dans le calcul de la sortie du deuxième ET\n");
+        return -1;
+    }
+    printf("sortie_et2: %f\n", sortie_et2);
+
+    // Création du réseau OU avec 2 entrées
+    printf("Création du neurone OU\n");
+    Neurone neurone_ou;
+    neurone_ou.nb_entrees = 2;
+    neurone_ou.biais = 2;
+    neurone_ou.poids = remplirListePoidsVal1(neurone_ou.nb_entrees);
+    Listecouche* Reseau_OU = creer_reseau_avec_neurone(neurone_ou);
+
+    // Vérifier si le réseau a été créé
+    if (Reseau_OU == NULL) {
+        printf("Erreur dans la création du réseau OU\n");
+        return -1;
+    }
+    printf("Réseau OU créé avec succès\n");
+
+    // Création des entrées pour le réseau OU
+    printf("Création des entrées pour le réseau OU\n");
+    Entree* Ou_tete = (Entree*)malloc(sizeof(Entree));
+    if (Ou_tete == NULL) {
+        printf("Erreur d'allocation mémoire pour Ou_tete\n");
+        return -1;
+    }
+    Ou_tete->data = sortie_et1;
+    Ou_tete->suivant = NULL;
+
+    Entree* Ou_dernier = (Entree*)malloc(sizeof(Entree));
+    if (Ou_dernier == NULL) {
+        printf("Erreur d'allocation mémoire pour Ou_dernier\n");
+        return -1;
+    }
+    Ou_dernier->data = sortie_et2;
+    Ou_dernier->suivant = NULL;
+
+    Ou_tete->suivant = Ou_dernier;
+
+    printf("Entrées pour le réseau OU créées\n");
+
+    // Retour de la sortie du réseau OU
+    printf("Calcul de la sortie du réseau OU\n");
+    float result = reseauOU(Reseau_OU, Ou_tete);
+    if (result == -1) {
+        printf("Erreur dans le calcul de la sortie du réseau OU\n");
+        return -1;
+    }
+    printf("result: %f\n", result);
+
+    // Libération de la mémoire
+    free(et_1);
+    free(entree_not_B);
+    free(entree_C);
+    free(et_2);
+    free(entree_not_C);
+    free(Ou_tete);
+    free(Ou_dernier);
+
+    return result;
 }

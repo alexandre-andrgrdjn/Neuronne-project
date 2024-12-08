@@ -170,7 +170,7 @@ int main() {
 
     return 0;
 }
-*/
+
 //test reseau NOT
 
 int main() {
@@ -225,3 +225,101 @@ int main() {
 
     return 0;
 }
+*/
+
+int main() {
+    int nb_entrees;
+    printf("Combien d'entrées voulez-vous dans le réseau ? ");
+    scanf("%d", &nb_entrees); 
+     Entree* entrees = remplirListeEntree(nb_entrees);
+
+    Listecouche* reseauA = (Listecouche*)malloc(sizeof(Listecouche));
+
+    if (reseauA == NULL) {
+        printf("Erreur d'allocation mémoire pour le réseau.\n");
+        return -1;
+    }
+    reseauA->couche = (Couche*)malloc(sizeof(Couche));
+    if (reseauA->couche == NULL) {
+        printf("Erreur d'allocation mémoire pour la couche.\n");
+        return -1;
+    }
+    *reseauA->couche = InitCouche(1, nb_entrees);
+
+
+    Listecouche* reseauB = (Listecouche*)malloc(sizeof(Listecouche));
+
+    if (reseauB == NULL) {
+        printf("Erreur d'allocation mémoire pour le réseau.\n");
+        return -1;
+    }
+    reseauB->couche = (Couche*)malloc(sizeof(Couche));
+    if (reseauB->couche == NULL) {
+        printf("Erreur d'allocation mémoire pour la couche.\n");
+        return -1;
+    }
+    *reseauB->couche = InitCouche(1, nb_entrees);
+
+
+    Listecouche* reseauC = (Listecouche*)malloc(sizeof(Listecouche));
+
+    if (reseauC == NULL) {
+        printf("Erreur d'allocation mémoire pour le réseau.\n");
+        return -1;
+    }
+    reseauC->couche = (Couche*)malloc(sizeof(Couche));
+    if (reseauA->couche == NULL) {
+        printf("Erreur d'allocation mémoire pour la couche.\n");
+        return -1;
+    }
+    *reseauC->couche = InitCouche(1, nb_entrees);
+
+    float resultat = reseauMultiCouches(reseauA,reseauB,reseauC, entrees);
+
+     if (resultat != -1) {
+        printf("Le résultat du réseau Multicouches est : %.2f\n", resultat);
+    }
+
+     Entree* temp;
+    while (entrees != NULL) {
+        temp = entrees;
+        entrees = entrees->suivant;
+        free(temp);
+    }
+    NoeudNeurone* noeud_courant1 = reseauA->couche->neurones;
+    while (noeud_courant1 != NULL) {
+        NoeudNeurone* temp = noeud_courant1;
+        noeud_courant1 = noeud_courant1->suivant;
+        free(temp->neurone.poids);
+        free(temp);
+    }
+    free(reseauA->couche);
+    free(reseauA);
+
+     NoeudNeurone* noeud_courant2 = reseauB->couche->neurones;
+    while (noeud_courant2 != NULL) {
+        NoeudNeurone* temp = noeud_courant2;
+        noeud_courant2 = noeud_courant2->suivant;
+        free(temp->neurone.poids);
+        free(temp);
+    }
+    free(reseauB->couche);
+    free(reseauB);
+
+ NoeudNeurone* noeud_courant3 = reseauC->couche->neurones;
+    while (noeud_courant3 != NULL) {
+        NoeudNeurone* temp = noeud_courant3;
+        noeud_courant3 = noeud_courant3->suivant;
+        free(temp->neurone.poids);
+        free(temp);
+    }
+    free(reseauC->couche);
+    free(reseauC);
+
+
+    return 0;
+}
+
+
+
+

@@ -55,7 +55,7 @@ typedef struct nbCouches {
 // Fonctions du projet
 
 //partie 1
-int Outneurone(Entree* liste_entree, Neurone neurone);
+float Outneurone(Entree* liste_entree, Neurone neurone);
 Neurone InitNeur(int n);
 
 //partie 2
@@ -68,6 +68,8 @@ void libererListePoids(Poids* tete);
 Entree* remplirListeEntree(int n);
 nbCouches* CreerListeTailles();
 void afficherReseau(Listecouche* reseau);
+Listecouche* creer_reseau_avec_neurone(Neurone neurone);
+Poids* remplirListePoidsVal1(int n) ;
 
 //Partie 3
 Listecouche* CreerResNeur(int nb_couches, nbCouches* liste_nbParCouches) ;
@@ -75,4 +77,5 @@ Listecouche* CreerResNeur(int nb_couches, nbCouches* liste_nbParCouches) ;
 float reseauET(Listecouche* reseau, Entree* entrees);
 float reseauOU(Listecouche* reseau, Entree* entrees);
 float reseauNOT(Listecouche* reseau, Entree* entrees);
+float reseauMultiCouches(Listecouche* reseauA, Listecouche* reseauB, Listecouche* reseauC, Entree* entrees) ;
 #endif

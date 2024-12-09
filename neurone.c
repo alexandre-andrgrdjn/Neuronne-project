@@ -48,7 +48,7 @@ Couche InitCouche(int nb_neurones, int nb_entrees) {
     NoeudNeurone* dernier = NULL;
 
     for (int i = 0; i < nb_neurones; i++) {
-    printf("neurone %d\n", i + 1);
+        printf("Initialisation du Neurone %d\n", i + 1);
         NoeudNeurone* nouveau = (NoeudNeurone*)malloc(sizeof(NoeudNeurone));
         if (nouveau == NULL) {
             printf("Erreur d'allocation mémoire\n");
@@ -63,11 +63,11 @@ Couche InitCouche(int nb_neurones, int nb_entrees) {
             dernier->suivant = nouveau;
         }
         dernier = nouveau;
-    
     }
 
     return couche;
 }
+
 
 
 

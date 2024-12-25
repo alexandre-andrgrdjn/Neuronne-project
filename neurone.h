@@ -8,7 +8,7 @@
 
 //partie 1
 typedef struct Poids {
-    float data;
+    int data;
     struct Poids* suivant;
 } Poids;
 
@@ -19,25 +19,28 @@ typedef struct Entree {
 
 typedef struct Neurone {
     Poids* poids;
-    float biais;
+    int biais;
     int nb_entrees;
 } Neurone;
 
+
+
 //partie 2
+
 typedef struct NoeudNeurone {
     Neurone neurone;
     struct NoeudNeurone* suivant;
 } NoeudNeurone;
 
+typedef struct ListeSortie {
+    int data;
+    struct ListeSortie* suivant;
+} ListeSortie;
+
 typedef struct Couche {
     NoeudNeurone* neurones;
     int nb_neurones;
 } Couche;
-
-typedef struct ListeSortie {
-    float data;
-    struct ListeSortie* suivant;
-} ListeSortie;
 
 //partie 3
 
@@ -70,6 +73,7 @@ nbCouches* CreerListeTailles();
 void afficherReseau(Listecouche* reseau);
 Listecouche* creer_reseau_avec_neurone(Neurone neurone);
 Poids* remplirListePoidsVal1(int n) ;
+Entree* convertirListeSortieEnEntree(ListeSortie* liste_sorties);
 
 //Partie 3
 Listecouche* CreerResNeur(int nb_couches, nbCouches* liste_nbParCouches) ;

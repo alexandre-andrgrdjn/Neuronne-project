@@ -1,32 +1,5 @@
 #include "neurone.h"
 
-Poids* remplirListePoidsVal1(int n) {
-    Poids* current = NULL;
-    Poids* previous = NULL;
-    Poids* tete = NULL;
-
-    for (int i = 0; i < n; i++) {
-        current = (Poids*)malloc(sizeof(Poids)); 
-        if (current == NULL) {
-            printf("Erreur d'allocation mémoire\n");
-            exit(1);
-        }
-
-        current->data = 1.0f;  // Initialiser tous les poids à 1
-        current->suivant = NULL;  
-
-        if (tete == NULL) {
-            tete = current;  
-        } else {
-            previous->suivant = current;  
-        }
-
-        previous = current;  
-    }
-
-    return tete;  
-}
-
 Poids* remplirListePoids(int n) {
     Poids* current = NULL;
     Poids* previous = NULL;
@@ -40,7 +13,7 @@ Poids* remplirListePoids(int n) {
         }
 
         printf("Poids %d: ", i + 1);
-        scanf("%f", &current->data);
+        scanf("%d", &current->data);
         current->suivant = NULL;  
 
         if (tete == NULL) {
@@ -53,18 +26,6 @@ Poids* remplirListePoids(int n) {
     }
 
     return tete;  
-}
-
-
-void libererListePoids(Poids* tete) {
-    Poids* current = tete;
-    Poids* suivant = NULL;
-
-    while (current != NULL) {
-        suivant = current->suivant;
-        free(current);  
-        current = suivant;
-    }
 }
 
 
@@ -95,6 +56,47 @@ Entree* remplirListeEntree(int n) {
 
     return tete;
 }
+
+
+Poids* remplirListePoidsVal1(int n) {
+    Poids* current = NULL;
+    Poids* previous = NULL;
+    Poids* tete = NULL;
+
+    for (int i = 0; i < n; i++) {
+        current = (Poids*)malloc(sizeof(Poids)); 
+        if (current == NULL) {
+            printf("Erreur d'allocation mémoire\n");
+            exit(1);
+        }
+
+        current->data = 1;  // Initialiser tous les poids à 1
+        current->suivant = NULL;  
+
+        if (tete == NULL) {
+            tete = current;  
+        } else {
+            previous->suivant = current;  
+        }
+
+        previous = current;  
+    }
+
+    return tete;  
+}
+
+
+void libererListePoids(Poids* tete) {
+    Poids* current = tete;
+    Poids* suivant = NULL;
+
+    while (current != NULL) {
+        suivant = current->suivant;
+        free(current);  
+        current = suivant;
+    }
+}
+
 
 NoeudNeurone* remplirCouche(int nb_neurones, int nb_entrees) {
     NoeudNeurone* tete = NULL;
@@ -151,6 +153,7 @@ nbCouches* CreerListeTailles() {
 
     return tete;
 }
+
 void afficherReseau(Listecouche* reseau) {
     Listecouche* current = reseau;
     int couche_id = 1;
@@ -167,12 +170,12 @@ void afficherReseau(Listecouche* reseau) {
             Poids* poids_courant = neurone_courant->neurone.poids;
             int poids_id = 1;
             while (poids_courant != NULL) {
-                printf("    Poids %d : %.2f\n", poids_id, poids_courant->data);
+                printf("    Poids %d : %.d\n", poids_id, poids_courant->data);
                 poids_courant = poids_courant->suivant;
                 poids_id++;
             }
             
-            printf("    Biais : %.2f\n", neurone_courant->neurone.biais);
+            printf("    Biais : %.d\n", neurone_courant->neurone.biais);
 
             neurone_courant = neurone_courant->suivant;
             neurone_id++;
@@ -182,8 +185,8 @@ void afficherReseau(Listecouche* reseau) {
         couche_id++;
     }
 }
+
 Listecouche* creer_reseau_avec_neurone(Neurone neurone) {
-    // Allouer la mémoire pour le réseau
     Listecouche* reseau = (Listecouche*)malloc(sizeof(Listecouche));
     if (reseau == NULL) {
         printf("Erreur d'allocation mémoire pour le réseau.\n");
@@ -215,4 +218,25 @@ Listecouche* creer_reseau_avec_neurone(Neurone neurone) {
     reseau->suivant = NULL;
     
     return reseau;
+}
+Entree* convertirListeSortieEnEntree(ListeSortie* liste_sorties) {
+    Entree* liste_entrees = NULL;
+    Entree* dernier = NULL;
+
+    while (liste_sorties != NULL) {
+        Entree* nouvelle_entree = (Entree*)malloc(sizeof(Entree));
+        nouvelle_entree->data = (float)liste_sorties->data; // Conversion de int à float
+        nouvelle_entree->suivant = NULL;
+
+        if (dernier == NULL) {
+            liste_entrees = nouvelle_entree;
+        } else {
+            dernier->suivant = nouvelle_entree;
+        }
+
+        dernier = nouvelle_entree;
+        liste_sorties = liste_sorties->suivant;
+    }
+
+    return liste_entrees;
 }

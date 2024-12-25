@@ -1,23 +1,24 @@
 #include "neurone.h" 
 Neurone InitNeur(int n) {
+
     Neurone neurone;
     neurone.nb_entrees = n;
-    neurone.poids = remplirListePoids(n);
+    neurone.poids = remplirListePoids(n);//utils function
     printf("Entrez le biais du neurone : ");
-    scanf("%f", &neurone.biais);
+    scanf("%d", &neurone.biais);
     return neurone;
 }
 
 float Outneurone(Entree* liste_entree, Neurone neurone) {
     if (liste_entree == NULL) {
         printf("Erreur : liste d'entrées est NULL.\n");
-        return -1;  // ou gérer l'erreur autrement
+        return -1;  //error
     }
     if (neurone.poids == NULL) {
         printf("Erreur : poids du neurone sont NULL.\n");
-        return -1;  // ou gérer l'erreur autrement
+        return -1;  //error
     }
-    float somme = 0;
+    int somme = 0;
     Poids* current_poids = neurone.poids;
     Entree* current_entree = liste_entree;
 
@@ -25,20 +26,22 @@ float Outneurone(Entree* liste_entree, Neurone neurone) {
 
          if (current_poids == NULL || current_entree == NULL) {
             printf("Erreur : pointeur poids ou entrée manquant à l'index %d.\n", i);
-            return -1;  // ou gérer l'erreur autrement
+            return -1;  // error
         }
-        somme += current_poids->data * current_entree->data;
+        somme += current_poids->data * current_entree->data;// calculation
         current_poids = current_poids->suivant;
         current_entree = current_entree->suivant;
     }
 
-    if (somme >= neurone.biais) {
+    if (somme >= neurone.biais) { //check if the neuronne is on or off
         return 1;
     } else {
         return 0;
     }
 }
-//Partie 2
+
+
+//Part 2
 
 
 Couche InitCouche(int nb_neurones, int nb_entrees) {
@@ -48,70 +51,74 @@ Couche InitCouche(int nb_neurones, int nb_entrees) {
     NoeudNeurone* dernier = NULL;
 
     for (int i = 0; i < nb_neurones; i++) {
-        printf("Initialisation du Neurone %d\n", i + 1);
+    printf("Neurrone %d\n", i+1);
         NoeudNeurone* nouveau = (NoeudNeurone*)malloc(sizeof(NoeudNeurone));
         if (nouveau == NULL) {
             printf("Erreur d'allocation mémoire\n");
             exit(1);
         }
-        nouveau->neurone = InitNeur(nb_entrees);
+        nouveau->neurone = InitNeur(nb_entrees);//each elem are create with InitNeur
         nouveau->suivant = NULL;
 
-        if (couche.neurones == NULL) {
+        if (couche.neurones == NULL) { // if it's first elem, keep his adress
             couche.neurones = nouveau;
         } else {
             dernier->suivant = nouveau;
         }
-        dernier = nouveau;
+        dernier = nouveau;//next elem
+    
     }
 
-    return couche;
+    return couche; // return layer with all the elems
 }
 
 
 
-
 ListeSortie* OutCouche(Couche couche, Entree* liste_entrees) {
-    ListeSortie* sortie_tete = NULL;
+    ListeSortie* sortie_tete = NULL; //create list with all the output for each neurrones
     ListeSortie* sortie_precedente = NULL;
 
     NoeudNeurone* current_neurone = couche.neurones;
 
     while (current_neurone != NULL) {
-        int sortie_neurone = Outneurone(liste_entrees, current_neurone->neurone);
+
+        int sortie_neurone = Outneurone(liste_entrees, current_neurone->neurone);//each neurrone on the layer are test
         
         ListeSortie* nouvelle_sortie = (ListeSortie*)malloc(sizeof(ListeSortie));
         if (nouvelle_sortie == NULL) {
             printf("Erreur d'allocation mémoire\n");
             exit(1);
         }
-        nouvelle_sortie->data = sortie_neurone;
+        nouvelle_sortie->data = sortie_neurone;//1 or 0 link with the previous neurrone
         nouvelle_sortie->suivant = NULL;
 
         if (sortie_tete == NULL) {
-            sortie_tete = nouvelle_sortie;
+            sortie_tete = nouvelle_sortie;// if it's first elem, keep the adress
         } else {
             sortie_precedente->suivant = nouvelle_sortie;
         }
 
-        sortie_precedente = nouvelle_sortie;
+        sortie_precedente = nouvelle_sortie;//keep to complete the "next" of the previous
 
         current_neurone = current_neurone->suivant;
     }
 
-    return sortie_tete;
+    return sortie_tete;// return the list
 }
 
-//Partie 3
+//Part 3
 Listecouche* CreerResNeur(int nb_couches, nbCouches* liste_nbParCouches) {
-    nbCouches* temp = liste_nbParCouches;
+
+    nbCouches* temp = liste_nbParCouches;// to move through the list
     Listecouche* couche_pre = NULL;
     Listecouche* couche_tete = NULL;
+
     int nb_entrees_initial;
     printf("Donnez le nombre d'entrées initiales : ");
     scanf("%d", &nb_entrees_initial);
 
     for (int i = 0; i < nb_couches; i++) {
+
         int nb_neurones = temp->data;
 
         Listecouche* Newcouche = (Listecouche*)malloc(sizeof(Listecouche));
@@ -119,8 +126,9 @@ Listecouche* CreerResNeur(int nb_couches, nbCouches* liste_nbParCouches) {
             printf("Erreur d'allocation mémoire\n");
             exit(1);
         }
+        printf("Couche numéro %d\n", i+1);
 
-        Couche nouvelle_couche = InitCouche(nb_neurones, nb_entrees_initial);
+        Couche nouvelle_couche = InitCouche(nb_neurones, nb_entrees_initial); //initcouche for each elem because each eleme are layers
 
         Newcouche->couche = (Couche*)malloc(sizeof(Couche));
         if (Newcouche->couche == NULL) {
@@ -131,7 +139,7 @@ Listecouche* CreerResNeur(int nb_couches, nbCouches* liste_nbParCouches) {
 
         Newcouche->suivant = NULL;
 
-        if (couche_tete == NULL) {
+        if (couche_tete == NULL) { // the aim is to keep the adress for the first elem
             couche_tete = Newcouche;
         } else {
             couche_pre->suivant = Newcouche;
@@ -142,12 +150,15 @@ Listecouche* CreerResNeur(int nb_couches, nbCouches* liste_nbParCouches) {
         temp = temp->suivant;
     }
 
-    return couche_tete;
+    return couche_tete; // return the adress from the first elem 
 }
-//Partie 4
+//Part 4
+
+//network AND
 
 float reseauET(Listecouche* reseau, Entree* entrees) {
-    if (reseau == NULL || reseau->couche == NULL) {
+
+    if (reseau == NULL || reseau->couche == NULL) { 
         printf("Erreur : réseau ou couche invalide.\n");
         return -1;
     }
@@ -158,47 +169,30 @@ float reseauET(Listecouche* reseau, Entree* entrees) {
     printf("Erreur : ce réseau contient %d neurones, mais la fonction ET nécessite exactement 1 neurone.\n", couche_principale->nb_neurones);
     return -1; 
 }
-
-    NoeudNeurone* noeud_courant = couche_principale->neurones;
+NoeudNeurone* premier_neurone = couche_principale->neurones;
     
-    while (noeud_courant != NULL) {
-        Neurone* neurone_courant = &noeud_courant->neurone;
+    // Vérification et initialisation du neurone
+    Neurone* neurone_courant = &premier_neurone->neurone;
+    if (neurone_courant->biais != neurone_courant->nb_entrees) {
+        printf("Biais modifié pour être égal au nombre d'entrées (%d).\n", neurone_courant->nb_entrees);
+        neurone_courant->biais = neurone_courant->nb_entrees; 
+    }
 
-         if (neurone_courant->biais != neurone_courant->nb_entrees) {
-            printf("Biais modifié pour être égal au nombre d'entrées (%d).\n", neurone_courant->nb_entrees);
-            neurone_courant->biais = neurone_courant->nb_entrees;  // Ajuste le biais pour qu'il soit égal au nombre d'entrées
+    Poids* poids_courant = neurone_courant->poids;
+    while (poids_courant != NULL) {
+        if (poids_courant->data != 1) {
+            printf("Poids différent de 1 détecté : réinitialisation à 1.\n");
+            poids_courant->data = 1;
         }
-
-        Poids* poids_courant = neurone_courant->poids;
-        
-        while (poids_courant != NULL) {
-            if (poids_courant->data != 1) {
-                printf("Poids différent de 1 détecté : réinitialisation à 1.\n");
-                poids_courant->data = 1;
-            }
-            poids_courant = poids_courant->suivant;
-        }
-        noeud_courant = noeud_courant->suivant;
+        poids_courant = poids_courant->suivant;
     }
 
-   ListeSortie* sorties = OutCouche(*(couche_principale), entrees);
-
-    if (sorties == NULL) {
-        printf("Erreur : aucune sortie générée.\n");
-        return -1;
-    }
-
-    float resultat = sorties->data;
-
-    ListeSortie* temp;
-    while (sorties != NULL) {
-        temp = sorties->suivant;
-        free(sorties);
-        sorties = temp;
-    }
-
+    // Calcul de la sortie du premier neurone
+    float resultat = Outneurone(entrees, *(neurone_courant));  // Utilisation de *neurone_courant pour passer un Neurone
+    
     return resultat;
 }
+
 float reseauOU(Listecouche* reseau, Entree* entrees) {
     if (reseau == NULL || reseau->couche == NULL) {
         printf("Erreur : réseau ou couche invalide.\n");

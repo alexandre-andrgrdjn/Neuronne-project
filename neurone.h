@@ -74,6 +74,7 @@ void afficherReseau(Listecouche* reseau);
 Listecouche* creer_reseau_avec_neurone(Neurone neurone);
 Poids* remplirListePoidsVal1(int n) ;
 Entree* convertirListeSortieEnEntree(ListeSortie* liste_sorties);
+Poids* remplirListePoidsValnot1(int n);
 
 //Partie 3
 Listecouche* CreerResNeur(int nb_couches, nbCouches* liste_nbParCouches) ;

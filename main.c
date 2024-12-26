@@ -201,66 +201,65 @@ int main() {
 
     return 0;
 }
-*/
-//test reseau NOT
+
+//test NOT network (check)
 
 int main() {
-    
-    int nb_entrees=0;
-    printf("Combien d'entrées voulez-vous dans le réseau ? ");
-    scanf("%d", &nb_entrees); 
 
-    while (nb_entrees != 1)
-    {
-    printf("Pour un reseau NOT , il ne faut qu'une seule entrée.\n ");
-    nb_entrees = 1; 
-    }
+    int n;
+    Entree* liste_entree = NULL;
 
-   
-    Entree* entrees = remplirListeEntree(nb_entrees);
+    printf("Combien d'entrées pour le neurone? ");
+    scanf("%d", &n);
 
-   Listecouche* reseau = (Listecouche*)malloc(sizeof(Listecouche));
-    if (reseau == NULL) {
-        printf("Erreur d'allocation mémoire pour le réseau.\n");
-        return -1;
-    }
+    Neurone neurone = InitNeur(n); 
+    liste_entree = remplirListeEntree(n); 
 
-    reseau->couche = (Couche*)malloc(sizeof(Couche));
-    if (reseau->couche == NULL) {
-        printf("Erreur d'allocation mémoire pour la couche.\n");
-        return -1;
-    }
-    *reseau->couche = InitCouche(1, nb_entrees);
+    float sortie = Outneurone(liste_entree, neurone);
+    printf("Sortie du neurone : %f\n", sortie);
 
-    float resultat = reseauNOT(reseau, entrees);
+    Entree* listesortie = NULL;
+    listesortie = (Entree*)malloc(sizeof(Entree));
+        if (listesortie == NULL) {
+            printf("Erreur d'allocation mémoire\n");
+            exit(1);
+        }
+    listesortie->data=sortie;
+    listesortie->suivant=NULL;
+
+
+    free(neurone.poids);
+
+    //create neurone "neurone_not"
+    int nb_neurones=1;
+    Neurone neurone_not;
+    neurone_not.nb_entrees = nb_neurones;
+    neurone_not.biais = 0;
+    neurone_not.poids = remplirListePoidsValnot1(nb_neurones);//utils function
+    Listecouche* reseau = creer_reseau_avec_neurone(neurone_not);
+
+     float resultat = reseauNOT(reseau,listesortie);
 
     if (resultat != -1) {
-        printf("Le résultat du réseau NOT est : %.2f\n", resultat);
+        printf("Le résultat du réseau NOT est : %.f\n", resultat);
     }
 
-    Entree* temp;
-    while (entrees != NULL) {
-        temp = entrees;
-        entrees = entrees->suivant;
-        free(temp);
-    }
-    NoeudNeurone* noeud_courant = reseau->couche->neurones;
-    while (noeud_courant != NULL) {
-        NoeudNeurone* temp = noeud_courant;
-        noeud_courant = noeud_courant->suivant;
-        free(temp->neurone.poids);
-        free(temp);
-    }
+    //free part
+
+     free(neurone_not.poids);
+    free(reseau->couche->neurones);
     free(reseau->couche);
     free(reseau);
-
+    free(listesortie);
+    free(liste_entree);
     return 0;
 }
-/*
+*/
 //test reseau
 
 int main() {
-    int nb_entrees=0;
+
+    int nb_entrees=0, nb_neuronnes =1;
     printf("Combien d'entrées voulez-vous dans le réseau ? ");
     scanf("%d", &nb_entrees); 
      Entree* entrees = remplirListeEntree(nb_entrees);
@@ -276,7 +275,10 @@ int main() {
         printf("Erreur d'allocation mémoire pour la couche.\n");
         return -1;
     }
-    *reseauA->couche = InitCouche(1, nb_entrees);
+    printf("\ncouche du premier reseau\n");
+    printf("combien de neuronne pour le premier reseau ?\n");
+    scanf("%d",&nb_neuronnes);
+    *reseauA->couche = InitCouche(nb_neuronnes, nb_entrees);
 
 
     Listecouche* reseauB = (Listecouche*)malloc(sizeof(Listecouche));
@@ -290,27 +292,33 @@ int main() {
         printf("Erreur d'allocation mémoire pour la couche.\n");
         return -1;
     }
-    *reseauB->couche = InitCouche(1, nb_entrees);
-
-
-    Listecouche* /reseauC = (Listecouche*)malloc(sizeof(Listecouche));
+    printf("\ncouche du deuxieme reseau \n");
+    printf("combien de neuronne pour le deuxieme reseau ?\n");
+    scanf("%d",&nb_neuronnes);
+    *reseauB->couche = InitCouche(nb_neuronnes, nb_entrees);
+    Listecouche* reseauC = (Listecouche*)malloc(sizeof(Listecouche));
 
     if (reseauC == NULL) {
         printf("Erreur d'allocation mémoire pour le réseau.\n");
         return -1;
     }
     reseauC->couche = (Couche*)malloc(sizeof(Couche));
-    if (reseauA->couche == NULL) {
+    if (reseauC->couche == NULL) {
         printf("Erreur d'allocation mémoire pour la couche.\n");
         return -1;
     }
-    *reseauC->couche = InitCouche(1, nb_entrees);
+    printf("\ncouche du troisieme reseau \n");
+    printf("combien de neuronne pour le troisieme reseau ?\n");
+    scanf("%d",&nb_neuronnes);
+    *reseauC->couche = InitCouche(nb_neuronnes, nb_entrees);
 
     float resultat = reseauMultiCouches(reseauA,reseauB,reseauC, entrees);
 
      if (resultat != -1) {
         printf("Le résultat du réseau Multicouches est : %.2f\n", resultat);
     }
+
+    //free part
 
      Entree* temp;
     while (entrees != NULL) {
@@ -351,7 +359,6 @@ int main() {
 
     return 0;
 }
-*/
 
 
 

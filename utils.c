@@ -85,6 +85,33 @@ Poids* remplirListePoidsVal1(int n) {
     return tete;  
 }
 
+Poids* remplirListePoidsValnot1(int n) {
+    Poids* current = NULL;
+    Poids* previous = NULL;
+    Poids* tete = NULL;
+
+    for (int i = 0; i < n; i++) {
+        current = (Poids*)malloc(sizeof(Poids)); 
+        if (current == NULL) {
+            printf("Erreur d'allocation mémoire\n");
+            exit(1);
+        }
+
+        current->data = -1;  // Initialiser tous les poids à -1
+        current->suivant = NULL;  
+
+        if (tete == NULL) {
+            tete = current;  
+        } else {
+            previous->suivant = current;  
+        }
+
+        previous = current;  
+    }
+
+    return tete;  
+}
+
 
 void libererListePoids(Poids* tete) {
     Poids* current = tete;

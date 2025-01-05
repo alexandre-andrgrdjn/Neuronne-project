@@ -154,72 +154,178 @@ void creerReseau() {
 void testerReseauxLogiques() {
     printf("\n=== Tests des Reseaux Logiques ===\n");
     printf("Choisissez un reseau à tester :\n");
-    printf("1. Reseau AND\n2. Reseau OR\n3. Reseau NOT\n");
+    printf("1. Reseau AND\n");
+    printf("2. Reseau OR\n");
+    printf("3. Reseau NOT\n");
+
     int choix;
     scanf("%d", &choix);
 
     switch (choix) {
         case 1: {
-            printf("Test Reseau AND\n");
-            int n;
-            printf("Combien d'entrees pour le reseau AND ? ");
-            scanf("%d", &n);
+            printf("\n--- Test du Reseau AND ---\n");
 
-            Entree* entrees = remplirListeEntree(n);
-            Neurone neurone_et = {remplirListePoidsVal1(n), n, n};
-            Listecouche* reseau = creer_reseau_avec_neurone(neurone_et);
+            int nb_neurones, nb_entrees;
+            printf("Entrez le nombre de neurones dans la couche : ");
+            scanf("%d", &nb_neurones);
+            printf("Entrez le nombre d'entrées pour chaque neurone : ");
+            scanf("%d", &nb_entrees);
 
-            float resultat = reseauET(reseau, entrees);
-            printf("Resultat Reseau AND : %.0f\n", resultat);
+            Couche couche = InitCouche(nb_neurones, nb_entrees);
+            Entree* liste_entrees = remplirListeEntree(nb_entrees);
+            ListeSortie* liste_sorties = OutCouche(couche, liste_entrees);
 
-            libererListePoids(neurone_et.poids);
-            free(reseau->couche->neurones);
+            //create neurone "neurone_et"
+
+            Neurone neurone_et;
+            neurone_et.nb_entrees = nb_neurones;
+            neurone_et.biais = nb_entrees;
+            neurone_et.poids = remplirListePoidsVal1(nb_neurones);//utils function
+
+            Listecouche* reseau = creer_reseau_avec_neurone(neurone_et);//put in network
+            Entree* liste_entrees_converties = convertirListeSortieEnEntree(liste_sorties);//mandatory to be use in reseauET
+
+            float resultat = reseauET(reseau, liste_entrees_converties);
+            if (resultat != -1) {
+                printf("Le résultat du réseau AND est : %.f\n", resultat);
+            }
+
+           //free memory part
+
+            Entree* temp_entree;
+            while (liste_entrees != NULL) {
+                temp_entree = liste_entrees->suivant;
+                free(liste_entrees);
+                liste_entrees = temp_entree;
+            }
+
+            ListeSortie* temp_sortie;
+            while (liste_sorties != NULL) {
+                temp_sortie = liste_sorties->suivant;
+                free(liste_sorties);
+                liste_sorties = temp_sortie;
+            }
+
+            NoeudNeurone* noeud_courant = reseau->couche->neurones;
+            while (noeud_courant != NULL) {
+                NoeudNeurone* temp_noeud = noeud_courant->suivant;
+                free(noeud_courant->neurone.poids);
+                free(noeud_courant);
+                noeud_courant = temp_noeud;
+            }
+
             free(reseau->couche);
             free(reseau);
             break;
         }
+
         case 2: {
-            printf("Test Reseau OR\n");
-            int n;
-            printf("Combien d'entrees pour le reseau OR ? ");
-            scanf("%d", &n);
+            printf("\n--- Test du Reseau OR ---\n");
 
-            Entree* entrees = remplirListeEntree(n);
-            Neurone neurone_ou = {remplirListePoidsVal1(n), 1, n};
-            Listecouche* reseau = creer_reseau_avec_neurone(neurone_ou);
+            int nb_neurones, nb_entrees;
+            printf("Entrez le nombre de neurones dans la couche : ");
+            scanf("%d", &nb_neurones);
+            printf("Entrez le nombre d'entrées pour chaque neurone : ");
+            scanf("%d", &nb_entrees);
 
-            float resultat = reseauOU(reseau, entrees);
-            printf("Resultat Reseau OR : %.0f\n", resultat);
+            Couche couche = InitCouche(nb_neurones, nb_entrees);
+            Entree* liste_entrees = remplirListeEntree(nb_entrees);
+            ListeSortie* liste_sorties = OutCouche(couche, liste_entrees);
 
-            libererListePoids(neurone_ou.poids);
-            free(reseau->couche->neurones);
+            //create neurone "neurone_ou"
+
+            Neurone neurone_ou;
+            neurone_ou.nb_entrees = nb_neurones;
+            neurone_ou.biais = 1;
+            neurone_ou.poids = remplirListePoidsVal1(nb_neurones);//utils function
+
+            Listecouche* reseau = creer_reseau_avec_neurone(neurone_ou);//put in network
+            Entree* liste_entrees_converties = convertirListeSortieEnEntree(liste_sorties); //mandatory to be use in reseauOU
+
+            float resultat = reseauOU(reseau, liste_entrees_converties);
+            if (resultat != -1) {
+                printf("Le résultat du réseau OU est : %.f\n", resultat);
+            }
+            
+            //free memory part
+
+            Entree* temp_entree;
+            while (liste_entrees != NULL) {
+                temp_entree = liste_entrees->suivant;
+                free(liste_entrees);
+                liste_entrees = temp_entree;
+            }
+
+            ListeSortie* temp_sortie;
+            while (liste_sorties != NULL) {
+                temp_sortie = liste_sorties->suivant;
+                free(liste_sorties);
+                liste_sorties = temp_sortie;
+            }
+
+            NoeudNeurone* noeud_courant = reseau->couche->neurones;
+            while (noeud_courant != NULL) {
+                NoeudNeurone* temp_noeud = noeud_courant->suivant;
+                free(noeud_courant->neurone.poids);
+                free(noeud_courant);
+                noeud_courant = temp_noeud;
+            }
+
             free(reseau->couche);
             free(reseau);
             break;
         }
+
         case 3: {
-            printf("Test Reseau NOT\n");
-            float entree;
-            printf("Entrez une valeur pour le reseau NOT (0 ou 1) : ");
-            scanf("%f", &entree);
+            printf("\n--- Test du Reseau NOT ---\n");
 
-            Entree* liste_entree = (Entree*)malloc(sizeof(Entree));
-            liste_entree->data = entree;
-            liste_entree->suivant = NULL;
+            int n;
+            Entree* liste_entree = NULL;
 
-            Neurone neurone_not = {remplirListePoidsValnot1(1), 0, 1};
+            printf("Combien d'entrées pour le neurone ? ");
+            scanf("%d", &n);
+
+            Neurone neurone = InitNeur(n);
+            liste_entree = remplirListeEntree(n);
+
+            float sortie = Outneurone(liste_entree, neurone);
+            printf("Sortie du neurone : %f\n", sortie);
+
+            Entree* listesortie = (Entree*)malloc(sizeof(Entree));
+            if (listesortie == NULL) {
+                printf("Erreur d'allocation mémoire\n");
+                exit(1);
+            }
+            listesortie->data = sortie;
+            listesortie->suivant = NULL;
+
+            free(neurone.poids);
+
+             //create neurone "neurone_not"
+
+            Neurone neurone_not;
+            neurone_not.nb_entrees = 1;
+            neurone_not.biais = 0;
+            neurone_not.poids = remplirListePoidsValnot1(1);//utils function
+
             Listecouche* reseau = creer_reseau_avec_neurone(neurone_not);
+            float resultat = reseauNOT(reseau, listesortie);
 
-            float resultat = reseauNOT(reseau, liste_entree);
-            printf("Resultat Réseau NOT : %.0f\n", resultat);
+            if (resultat != -1) {
+                printf("Le résultat du réseau NOT est : %.f\n", resultat);
+            }
 
-            libererListePoids(neurone_not.poids);
+            //free part 
+
+            free(neurone_not.poids);
             free(reseau->couche->neurones);
             free(reseau->couche);
             free(reseau);
+            free(listesortie);
             free(liste_entree);
             break;
         }
+
         default:
             printf("Choix invalide.\n");
     }
@@ -228,45 +334,74 @@ void testerReseauxLogiques() {
 void testerReseauMultiCouches() {
     printf("\n=== Test d'un Reseau Multi-Couches ===\n");
 
-    int nb_entrees, nb_neurones;
-    printf("Combien d'entrees voulez-vous dans le reseau ? ");
+    // Initialisation des entrées
+
+    int nb_entrees = 0, nb_neuronnes = 1;
+    printf("Combien d'entrées voulez-vous dans le réseau ? ");
     scanf("%d", &nb_entrees);
     Entree* entrees = remplirListeEntree(nb_entrees);
 
-    // Création des trois réseaux
+    // Initialisation du réseau A
     Listecouche* reseauA = (Listecouche*)malloc(sizeof(Listecouche));
-    Listecouche* reseauB = (Listecouche*)malloc(sizeof(Listecouche));
-    Listecouche* reseauC = (Listecouche*)malloc(sizeof(Listecouche));
-
-    if (reseauA == NULL || reseauB == NULL || reseauC == NULL) {
-        printf("Erreur d'allocation memoire pour les reseaux.\n");
-        return;
+    if (reseauA == NULL) {
+        printf("Erreur d'allocation mémoire pour le réseau.\n");
+        return -1;
     }
 
-    printf("\n=== Réseau A ===\n");
-    printf("Combien de neurones pour le reseau A ? ");
-    scanf("%d", &nb_neurones);
     reseauA->couche = (Couche*)malloc(sizeof(Couche));
-    *reseauA->couche = InitCouche(nb_neurones, nb_entrees);
+    if (reseauA->couche == NULL) {
+        printf("Erreur d'allocation mémoire pour la couche.\n");
+        return -1;
+    }
 
-    printf("\n=== Réseau B ===\n");
-    printf("Combien de neurones pour le reseau B ? ");
-    scanf("%d", &nb_neurones);
+    printf("\nCouche du premier réseau\n");
+    printf("Combien de neurones pour le premier réseau ?\n");
+    scanf("%d", &nb_neuronnes);
+    *reseauA->couche = InitCouche(nb_neuronnes, nb_entrees);
+
+    // Initialisation du réseau B
+    Listecouche* reseauB = (Listecouche*)malloc(sizeof(Listecouche));
+    if (reseauB == NULL) {
+        printf("Erreur d'allocation mémoire pour le réseau.\n");
+        return -1;
+    }
+
     reseauB->couche = (Couche*)malloc(sizeof(Couche));
-    *reseauB->couche = InitCouche(nb_neurones, nb_entrees);
+    if (reseauB->couche == NULL) {
+        printf("Erreur d'allocation mémoire pour la couche.\n");
+        return -1;
+    }
 
-    printf("\n=== Réseau C ===\n");
-    printf("Combien de neurones pour le reseau C ? ");
-    scanf("%d", &nb_neurones);
+    printf("\nCouche du deuxième réseau\n");
+    printf("Combien de neurones pour le deuxième réseau ?\n");
+    scanf("%d", &nb_neuronnes);
+    *reseauB->couche = InitCouche(nb_neuronnes, nb_entrees);
+
+    // Initialisation du réseau C
+    Listecouche* reseauC = (Listecouche*)malloc(sizeof(Listecouche));
+    if (reseauC == NULL) {
+        printf("Erreur d'allocation mémoire pour le réseau.\n");
+        return -1;
+    }
+
     reseauC->couche = (Couche*)malloc(sizeof(Couche));
-    *reseauC->couche = InitCouche(nb_neurones, nb_entrees);
+    if (reseauC->couche == NULL) {
+        printf("Erreur d'allocation mémoire pour la couche.\n");
+        return -1;
+    }
 
+    printf("\nCouche du troisième réseau\n");
+    printf("Combien de neurones pour le troisième réseau ?\n");
+    scanf("%d", &nb_neuronnes);
+    *reseauC->couche = InitCouche(nb_neuronnes, nb_entrees);
+
+    // Calcul du résultat
     float resultat = reseauMultiCouches(reseauA, reseauB, reseauC, entrees);
     if (resultat != -1) {
-        printf("Le resultat du reseau Multi-Couches est : %.2f\n", resultat);
+        printf("Le résultat du réseau multicouches est : %.2f\n", resultat);
     }
+    //free part
 
-    // Libération mémoire
     Entree* temp;
     while (entrees != NULL) {
         temp = entrees;
@@ -274,28 +409,36 @@ void testerReseauMultiCouches() {
         free(temp);
     }
 
-    NoeudNeurone* noeud_courant;
-    Listecouche* reseaux[] = {reseauA, reseauB, reseauC}; // Tableau des réseaux
-    for (int i = 0; i < 3; i++) {
-        Listecouche* reseau = reseaux[i];
-        NoeudNeurone* noeud_courant = reseau->couche->neurones;
-
-        while (noeud_courant != NULL) {
-            NoeudNeurone* temp_noeud = noeud_courant->suivant;
-            libererListePoids(noeud_courant->neurone.poids);
-            free(noeud_courant);
-            noeud_courant = temp_noeud;
-        }
-
-        free(reseau->couche);
-        free(reseau);
+    NoeudNeurone* noeud_courant1 = reseauA->couche->neurones;
+    while (noeud_courant1 != NULL) {
+        NoeudNeurone* temp = noeud_courant1;
+        noeud_courant1 = noeud_courant1->suivant;
+        free(temp->neurone.poids);
+        free(temp);
     }
+    free(reseauA->couche);
+    free(reseauA);
 
+    NoeudNeurone* noeud_courant2 = reseauB->couche->neurones;
+    while (noeud_courant2 != NULL) {
+        NoeudNeurone* temp = noeud_courant2;
+        noeud_courant2 = noeud_courant2->suivant;
+        free(temp->neurone.poids);
+        free(temp);
+    }
+    free(reseauB->couche);
+    free(reseauB);
+
+    NoeudNeurone* noeud_courant3 = reseauC->couche->neurones;
+    while (noeud_courant3 != NULL) {
+        NoeudNeurone* temp = noeud_courant3;
+        noeud_courant3 = noeud_courant3->suivant;
+        free(temp->neurone.poids);
+        free(temp);
+    }
+    free(reseauC->couche);
+    free(reseauC);
 }
-
-
-
-
 
 
 
